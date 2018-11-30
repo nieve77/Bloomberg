@@ -1,12 +1,14 @@
-import cx_Oracle
+import unittest
+import pybbg
+import datetime
+from dateutil.relativedelta import relativedelta
 
-con = cx_Oracle.connect('TPO/npi0708@10.0.1.30:1521/PNIDB')
+class TestPybbg(unittest.TestCase):
+    def test_bdp(self):
+        tester = pybbg.Pybbg()
+        data = tester.bdp(['060310 KS Equity', '299170 KS Equity'], ['BETA_RAW_OVERRIDABLE', 'TOT_DEBT_TO_TOT_EQY', 'BETA_ADJ_OVERRIDABLE'])
+        print(data)
 
-cur=con.cursor()
 
-
-cur.execute("select * from ent_issuinfom where std_dt='20161231'")
-for result in cur:
-    print(result)
-con.close()
-
+if __name__ == '__main__':
+    unittest.main()
