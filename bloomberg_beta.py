@@ -10,7 +10,7 @@ class TestPybbg(unittest.TestCase):
         print(data)
 
         data = tester.bdp(['060310 KS Equity', '095570 KS Equity', '068400 KS Equity'],
-                           ['TOT_DEBT_TO_TOT_EQY', 'FUND_PER=Q'])
+                           ['TOT_DEBT_TO_TOT_EQY'],['FUND_PER=Q'])
         print(data)
 
     def test_bdh(self):
