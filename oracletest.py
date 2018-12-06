@@ -6,6 +6,7 @@ cur=con.cursor()
 
 
 cur.execute("select * from ent_issuinfom where std_dt='20161231'")
+
 for result in cur:
-    print(result)
+     print(result)
 con.close()
