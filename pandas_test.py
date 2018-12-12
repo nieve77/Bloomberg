@@ -1,4 +1,33 @@
 import pandas as pd
+import cx_Oracle
+
+con = cx_Oracle.connect('TPO/npi0708@10.0.1.30:1521/PNIDB')
+
+cur=con.cursor()
+
+data_ex=[]
+data_value=[]
+ent_code=[]
+
+cur.execute("select * from ent_lstentinfo where std_dt='20181031' and (lstent_cd='000020' or lstent_cd='000030' or lstent_cd='000040') ")
+
+for result in cur:
+     ent_code.append(result[1])
+     data_ex.append(result[1])
+     data_ex.append(result[2])
+     data_ex.append(result[3])
+     data_ex.append(result[4])
+     data_ex.append(result[5])
+     data_ex.append(result[6])
+     data_ex.append(result[7])
+     data_ex.append(result[31])
+     data_value.append(data_ex)
+     data_ex=[]
+
+
+index = pd.Index(ent_code)
+df_test=pd.DataFrame({'ent_code' :ent_code})
+df_test.index=index
 
 data={
    'BETA_RAW_OVERRIDABLE' : [1.002866, 0.5914072, 1.568849],
@@ -11,18 +40,20 @@ data1={
 
 df=pd.DataFrame(data)
 df1=pd.DataFrame(data1)
+df.index=index
+df1.index=index
 
 data=[]
 data1=[]
 
-df_result=pd.concat([df,df1],axis=1)
-# print(df_result)
-#
-#
+df_result=pd.concat([df.transpose(),df1.transpose()])
+df_result=df_result.append(df_test.transpose())
+print(df_result)
+
 # print(df_result.transpose())
 
 
-rows = [tuple(x) for x in df_result.values]
+rows = [tuple(x) for x in df_result.transpose().values]
 print(rows)
 
 

@@ -4,7 +4,7 @@ import os
 os.environ['TCL_LIBRARY'] = "C:\\Users\\ysyoon\\AppData\\Local\\Programs\\Python\\Python37-32\\tcl\\tcl8.6"
 os.environ['TK_LIBRARY'] = "C:\\Users\\ysyoon\\AppData\\Local\\Programs\\Python\\Python37-32\\tcl\\tk8.6"
 
-build_exe_options= dict(packages = ["blpapi","pybbg","numpy","pandas"],
+build_exe_options= dict(packages = ["blpapi","pybbg","numpy","pandas","cx_oracle"],
 	excludes = [])
 
 base = None
