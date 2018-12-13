@@ -41,8 +41,8 @@ class Bloomberg_Beta(unittest.TestCase):
         ent_code_num.index=index
         print(ent_code_num.transpose())
 
-        # cur.executemany("INSERT INTO ENT_LSTENTINFO(STD_DT, LSTENT_CD, REG_DTM, REGR_ID, MDFY_DTM, MDFY_ID, ENT_NM, ENT_ENG_NM, LIST_DT) VALUES (TO_CHAR(SYSDATE-300,'YYYYMMDD'), :1, :2, :3, :4, :5, :6, :7, :8)",data_value)
-        # con.commit()
+        cur.executemany("INSERT INTO ENT_LSTENTINFO(STD_DT, LSTENT_CD, REG_DTM, REGR_ID, MDFY_DTM, MDFY_ID, ENT_NM, ENT_ENG_NM, LIST_DT) VALUES (TO_CHAR(SYSDATE-300,'YYYYMMDD'), :1, :2, :3, :4, :5, :6, :7, :8)",data_value)
+        con.commit()
 
         #RAW_ BETA, ADJUSTED BETA 가져오는 함수
         beta_ar = pybbg.Pybbg()
@@ -63,8 +63,8 @@ class Bloomberg_Beta(unittest.TestCase):
         rows = [tuple(x) for x in df_result.transpose().values]
         print(rows)
 
-        # cur.executemany("UPDATE ENT_LSTENTINFO SET RAW_BETA=:1, ADJE_BETA=:2, DEBT_EQUITY=:3 WHERE STD_DT=TO_CHAR(SYSDATE-300,'YYYYMMDD') AND LSTENT_CD=:4", rows)
-        # con.commit()
+        cur.executemany("UPDATE ENT_LSTENTINFO SET RAW_BETA=:1, ADJE_BETA=:2, DEBT_EQUITY=:3 WHERE STD_DT=TO_CHAR(SYSDATE-300,'YYYYMMDD') AND LSTENT_CD=:4", rows)
+        con.commit()
 
         con.close()
 
