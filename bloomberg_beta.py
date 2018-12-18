@@ -20,7 +20,8 @@ class Bloomberg_Beta(unittest.TestCase):
         cur = con.cursor()
 
 
-        cur.execute("select * from ent_lstentinfo where std_dt='20181031' and rownum<4")
+        # cur.execute("select * from ent_lstentinfo where std_dt='20181031' and rownum<4") 테스트용
+        cur.execute("select * from ent_lstentinfo where std_dt=TO_CHAR(SYSDATE,'YYYYMMDD')")
         # 데이터가이드에서 당일에 가져온 기업들의 데이터를 리스트로 가져온다
         for result in cur:
             ent_code.append(result[1] + ' KS EQUITY') # 블룸버그 API에 사용될 상장기업코드
@@ -37,12 +38,13 @@ class Bloomberg_Beta(unittest.TestCase):
             data_ex = []
 
         index = pd.Index(ent_code)
+        # 상장기업코드를 데이터프레임으로 만들어 블룸버그상장기업코드를 인덱스로 지정
         ent_code_num= pd.DataFrame({'ent_code_num' :ent_code_num})
         ent_code_num.index=index
         print(ent_code_num.transpose())
 
-        cur.executemany("INSERT INTO ENT_LSTENTINFO(STD_DT, LSTENT_CD, REG_DTM, REGR_ID, MDFY_DTM, MDFY_ID, ENT_NM, ENT_ENG_NM, LIST_DT) VALUES (TO_CHAR(SYSDATE-300,'YYYYMMDD'), :1, :2, :3, :4, :5, :6, :7, :8)",data_value)
-        con.commit()
+        # cur.executemany("INSERT INTO ENT_LSTENTINFO(STD_DT, LSTENT_CD, REG_DTM, REGR_ID, MDFY_DTM, MDFY_ID, ENT_NM, ENT_ENG_NM, LIST_DT) VALUES (TO_CHAR(SYSDATE-300,'YYYYMMDD'), :1, :2, :3, :4, :5, :6, :7, :8)",data_value)
+        # con.commit()
 
         #RAW_ BETA, ADJUSTED BETA 가져오는 함수
         beta_ar = pybbg.Pybbg()
@@ -63,7 +65,7 @@ class Bloomberg_Beta(unittest.TestCase):
         rows = [tuple(x) for x in df_result.transpose().values]
         print(rows)
 
-        cur.executemany("UPDATE ENT_LSTENTINFO SET RAW_BETA=:1, ADJE_BETA=:2, DEBT_EQUITY=:3 WHERE STD_DT=TO_CHAR(SYSDATE-300,'YYYYMMDD') AND LSTENT_CD=:4", rows)
+        cur.executemany("UPDATE ENT_LSTENTINFO SET RAW_BETA=:1, ADJE_BETA=:2, DEBT_EQUITY=:3 WHERE STD_DT=TO_CHAR(SYSDATE,'YYYYMMDD') AND LSTENT_CD=:4", rows)
         con.commit()
 
         con.close()
