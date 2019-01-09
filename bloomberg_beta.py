@@ -89,6 +89,7 @@ class Bloomberg_Beta(unittest.TestCase):
                            datetime.datetime.now().date() + datetime.timedelta(days=-4), datetime.datetime.now().date() + datetime.timedelta(days=-1))
         print(dr2)
 
+        #dr,dr1,d2 세 항목을 병합해서 처리
         dr_result = pd.concat([dr, dr1, dr2],axis=1)
 
         dr_result=dr_result.reset_index()
