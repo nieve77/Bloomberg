@@ -1,5 +1,6 @@
 import pandas as pd
 import cx_Oracle
+import datetime
 
 con = cx_Oracle.connect('TPO/npi0708@10.0.1.30:1521/PNIDB')
 
@@ -55,7 +56,6 @@ print(df_result)
 
 rows = [tuple(x) for x in df_result.transpose().values]
 print(rows)
-
 
 
 
