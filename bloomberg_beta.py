@@ -45,29 +45,30 @@ class Bloomberg_Beta(unittest.TestCase):
         # cur.executemany("INSERT INTO ENT_LSTENTINFO(STD_DT, LSTENT_CD, REG_DTM, REGR_ID, MDFY_DTM, MDFY_ID, ENT_NM, ENT_ENG_NM, LIST_DT) VALUES (TO_CHAR(SYSDATE-300,'YYYYMMDD'), :1, :2, :3, :4, :5, :6, :7, :8)",data_value)
         # con.commit()
 
-        #RAW_ BETA, ADJUSTED BETA 가져오는 함수
-        beta_ar = pybbg.Pybbg()
-        df = beta_ar.bdp(ent_code, ['BETA_ADJ_OVERRIDABLE', 'BETA_RAW_OVERRIDABLE'])
-        # print(df)
+        #RAW_ BETA, ADJUSTED BETA 가져오는 함수 ent_code가 빈 리스트가 아닐 경우에만 실행
+        if ent_code:
+            beta_ar = pybbg.Pybbg()
+            # bdp(ticker, field, override)로 사용 override값은 선택사항
+            df = beta_ar.bdp(ent_code, ['BETA_ADJ_OVERRIDABLE', 'BETA_RAW_OVERRIDABLE'])
+            # print(df)
 
-        # BETA,DEBT/EQUITY 가져오는 함수
-        beta_tot = pybbg.Pybbg()
-        df1 = beta_tot.bdp(ent_code, ['TOT_DEBT_TO_TOT_EQY'], overrides={'FUND_PER': 'Q'})
-        # print(df1)
+            # BETA,DEBT/EQUITY 가져오는 함수
+            beta_tot = pybbg.Pybbg()
+            df1 = beta_tot.bdp(ent_code, ['TOT_DEBT_TO_TOT_EQY'], overrides={'FUND_PER': 'Q'})
+            # print(df1)
 
-        #세 항목을 병합하고 기업코드 행추가
-        df_result = pd.concat([df, df1])
-        df_result = df_result.append(ent_code_num.transpose())
-        # print(df_result)
+            #세 항목을 병합하고 기업코드 행추가
+            df_result = pd.concat([df, df1])
+            df_result = df_result.append(ent_code_num.transpose())
+            # print(df_result)
 
 
-        rows = [tuple(x) for x in df_result.transpose().values]
-        # print(rows)
+            rows = [tuple(x) for x in df_result.transpose().values]
+            # print(rows)
 
-        cur.executemany("UPDATE ENT_LSTENTINFO SET RAW_BETA=:1, ADJE_BETA=:2, DEBT_EQUITY=:3 WHERE STD_DT=TO_CHAR(SYSDATE,'YYYYMMDD') AND LSTENT_CD=:4", rows)
-        con.commit()
-
-        con.close()
+            cur.executemany("UPDATE ENT_LSTENTINFO SET RAW_BETA=:1, ADJE_BETA=:2, DEBT_EQUITY=:3 WHERE STD_DT=TO_CHAR(SYSDATE,'YYYYMMDD') AND LSTENT_CD=:4", rows)
+            con.commit()
+            con.close()
 
 
     # WACC추정 데이터 블룸버그 API를 통해 배당수익률, 성장률, 배당금분배율, 시장수익률, 무위험이자율, 시장위험프리미엄데이터를 가져와 가중평균자본비용내역 테이블(ENT_WAGCOCP)에 저장
@@ -75,6 +76,7 @@ class Bloomberg_Beta(unittest.TestCase):
 
         # 최근 2~3일치의 기업가치가중치평균자본비용 데이터를 리스트로 가져온다
         wacc_etc = pybbg.Pybbg()
+        # bdh(ticker, field, start_date, end_date)로 사용
         dr = wacc_etc.bdh(['005930 KS Equity'],['COUNTRY_RISK_DIVIDEND_YIELD', 'COUNTRY_RISK_GROWTH_RATE', 'COUNTRY_RISK_PAYOUT_RATIO', 'COUNTRY_RISK_MARKET_RETURN'],
                           datetime.datetime.now().date() + datetime.timedelta(days=-4), datetime.datetime.now().date() + datetime.timedelta(days=-1))
 
@@ -82,12 +84,10 @@ class Bloomberg_Beta(unittest.TestCase):
         wacc_rfr = pybbg.Pybbg()
         dr1 = wacc_rfr.bdh(['GVSK10YR Index'], ['PX_LAST'],
                             datetime.datetime.now().date() + datetime.timedelta(days=-4), datetime.datetime.now().date() + datetime.timedelta(days=-1))
-        print(dr1)
 
         wacc_prem = pybbg.Pybbg()
         dr2 =wacc_prem.bdh("005930 KS Equity", ["COUNTRY_RISK_PREMIUM"],
                            datetime.datetime.now().date() + datetime.timedelta(days=-4), datetime.datetime.now().date() + datetime.timedelta(days=-1))
-        print(dr2)
 
         #dr,dr1,d2 세 항목을 병합해서 처리
         dr_result = pd.concat([dr, dr1, dr2],axis=1)
