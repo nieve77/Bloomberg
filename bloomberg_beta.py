@@ -105,7 +105,7 @@ class Bloomberg_Beta(unittest.TestCase):
         con = cx_Oracle.connect('TPO/npi0708@10.0.1.30:1521/PNIDB')
         cur = con.cursor()
 
-        # Merge문을 이용해 값이 있으면 Update 값이 없으면 Inseert구문 실행
+        # Merge문을 이용해 값이 있으면 Update 값이 없으면 Insert구문 실행
         str = """MERGE INTO ENT_WAGCOCP USING DUAL ON
              ( STD_DT = :1 )
           WHEN MATCHED THEN
